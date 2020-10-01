@@ -74,7 +74,7 @@
                     <br />
                 </div>
 
-                <button id="create_schedule">Create Schedule <img src="magic-wand.svg" alt="wand icon" /></button>
+                <button id="create_schedule">Create schedule <img src="magic-wand.svg" alt="wand icon" /></button>
 
                 <div id="info">Hello</div>
             </form>
