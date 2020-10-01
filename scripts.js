@@ -289,7 +289,7 @@ $(document).ready(function() {
             info += "Start date: " + formatDate(episode_events[0].start) + "<br />";
             info += "End date: " + formatDate(episode_events[episode_events.length-1].start) + "<br />";
             info += "Number of seasons: " + season_count + "<br />";
-            info += "Total watch time: " + total_runtime + "mins<br />";
+            info += "Total watch time: " + total_runtime + " mins<br />";
             info += "Average episode length: " + Math.floor(total_runtime/episode_count) + "mins<br />";
 
             $("#info").html(info);
