@@ -9,12 +9,12 @@
     <script src="fullcalendar/main.js"></script>
     <script src="scripts.js"></script>
 
-    <title>Rewatch Calendar</title>
+    <title>Watch Calendar</title>
 </head>
 <body>
 
     <div id="header">  
-        <h1>Rewatch Calendar</h1>
+        <h1>Watch Calendar</h1>
     </div>
     
     <div class="container">
