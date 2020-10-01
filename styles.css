@@ -1,0 +1,181 @@
+body{
+    margin: 0;
+    font-family: "Helvetica";
+}
+
+#header{
+    text-align: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+#header h1{
+    font-family: "Times New Roman", Times, serif;
+    font-size: 50px;
+    background-image: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    padding: 0 40px;
+}
+
+.container{
+    width: 1300px;
+    max-width: 100%;
+    min-width: 80%;
+    margin: auto;
+    padding: 30px;
+    vertical-align: top;
+}
+
+
+#navigation{
+    width: 260px;
+    display: inline-block;
+    border-right: 1px solid #ccc;
+}
+
+input{
+    font-size: 18px;
+    padding: 7px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+input[type="number"]{
+    width: 70px;
+}
+
+#create_schedule{
+    margin-top: 25px;
+    padding: 9px 15px;
+    border: 0px;
+    background: #76FEA9;
+    box-shadow: -2px 2px 1px 0 #60CD65;
+    border-radius: 5px;
+    color: #428E5E;
+    font-size: 18px;
+    height: 40px;
+    cursor: pointer;
+}
+
+#create_schedule:active{
+    position: relative;
+    left: -2px;
+    bottom: -2px;
+    box-shadow: none;
+}
+
+#create_schedule img{
+    width: 18px;
+    opacity: 0.4;
+    vertical-align: top;
+    margin: 0 0 0 3px;
+}
+
+.inactive{
+    opacity: 0.5;
+}
+
+#show_group{
+    display: inline-block;
+    width: 300px;
+    vertical-align: middle;
+    height: 40px;
+    overflow: visible;
+}
+
+#show_suggestions{
+    border: 1px solid #ccc;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    margin-left: 2px;
+    margin-top: -3px;
+    background: white;
+    position: relative;
+    opacity: 0;
+    z-index: -99;
+}
+
+#show_group.searching #show_suggestions, #show_group.searched #show_suggestions{
+    opacity: 1;
+    z-index: 99;
+}
+
+#show_group.searched .loading{
+    opacity: 0;
+}
+
+#show_suggestions li{
+    border-bottom: 1px solid #eee;
+    padding: 2px 5px;
+    line-height: 24px;
+    text-transform: capitalize;
+    font-size: 14px;
+}
+
+#show_suggestions li:hover{
+    background-color: #eeffee
+}
+
+#season_range_group{
+    display: none;
+}
+
+#options{
+    display: none;
+    /* opacity: 0.7 */
+}
+
+#setup{
+    width: 450px;
+    display: inline-block;
+    vertical-align: top;
+    line-height: 48px;
+    font-size: 18px;
+}
+
+
+#calendar{
+    width: calc(100% - 500px);
+    min-width: 700px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: #efefef;
+    border: none;
+    border-radius: 3px;
+    padding: 8px 20px 8px 10px;
+    font-size: 18px;
+}
+.select-container {position:relative; display: inline;}
+.select-container:after {content:""; width:0; height:0; position:absolute; pointer-events: none;}
+.select-container:after {
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    top: .3em;
+    right: .75em;
+    border-top: 8px solid black;
+    opacity: 0.5;
+}
+select::-ms-expand {
+    display: none;
+}
+
+#calendar .fc-daygrid-dot-event .fc-event-title{
+    font-weight: normal;
+    color: black;
+}
+
+#info{
+    line-height: 22px;
+    font-size: 14px;
+    margin-top: 30px;
+    color: #7d00e8;
+}
