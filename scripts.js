@@ -36,7 +36,8 @@ $(document).ready(function() {
             var resultCount = Math.min(data.length, 5);
             var results = "";
             for (i = 0; i < resultCount; i++) { 
-                var result_item = `<li class="show" data-id="${data[i].show.id}">${data[i].show.name}</li>`;
+                var premiered = data[i].show.premiered.substring(0,4);
+                var result_item = `<li class="show" data-id="${data[i].show.id}">${data[i].show.name} (${premiered})</li>`;
                 results += result_item;
             }
             $("#show_suggestions").html(results);
@@ -289,13 +290,17 @@ $(document).ready(function() {
             info += "Start date: " + formatDate(episode_events[0].start) + "<br />";
             info += "End date: " + formatDate(episode_events[episode_events.length-1].start) + "<br />";
             info += "Number of seasons: " + season_count + "<br />";
-            info += "Total watch time: " + total_runtime + " mins<br />";
+            info += "Total watch time: " + total_runtime + " mins (" + round(total_runtime/60) + " hours)<br />";
             info += "Average episode length: " + Math.floor(total_runtime/episode_count) + " mins<br />";
 
             $("#info").html(info);
             
 
 
+    }
+
+    function round(number){
+        return Math.floor(number * 100)/100;
     }
 
     
