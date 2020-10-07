@@ -177,5 +177,10 @@ select::-ms-expand {
     line-height: 22px;
     font-size: 14px;
     margin-top: 30px;
-    color: #7d00e8;
+    border-radius: 4px;
+    color: #3f9446;
+    background-color: rgb(209, 255, 209);
+    padding: 15px;
+    margin-right: 80px;
+    border: 1px solid rgb(173, 237, 173);
 }
