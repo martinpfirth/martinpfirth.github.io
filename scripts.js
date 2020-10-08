@@ -30,7 +30,6 @@ $(document).ready(function() {
     function showSearch(search_text){
         console.log('showing search');
         var encoded_name = encodeURIComponent(search_text).replace(/%20/g, "+");;
-        console.log(encoded_name);
 
         $.getJSON('http://api.tvmaze.com/search/shows?q=' + encoded_name, function(data) {
             var resultCount = Math.min(data.length, 5);
@@ -82,225 +81,203 @@ $(document).ready(function() {
         } else {
             $("#season_range_group").hide();
         }
-        //season_range_group
     });
 
     function createEvents(){
         //loop episodes, each one create event
+        var episode_count = episodes.length;
+        var season_count = episodes[episode_count-1].season;
+        var key_date = $('#key_date').datepicker('getDate');
+        var watch_date = key_date;
+        var episode_events = []; 
+        var day_count = 0;
+        var total_runtime = 0;
+        var plotForwards = true;
 
-        //10mins between episodes
-        //first episode at 10am
+        if($("#start_or_end").val() == "starting"){
+            plotForwards = true;
+        } else if($("#start_or_end").val() == "finishing"){
+            plotForwards = false;
+        } else {
+            alert("don't know whether to go forwards or backwards bro")
+        }
 
-            var episode_count = episodes.length;
-            var season_count = episodes[episode_count-1].season;
-            var total_runtime = 0;
-            
-
-            //January is 0. December is 11.
-            //var key_date = new Date(2020, 08, 29, 10, 33, 30, 0);
-
-            var key_date = $('#key_date').datepicker('getDate');
-
-            var watch_date = key_date;
-
-            var episode_events = []; 
-            var day_count = 0;
-
-            var plotForwards = true;
-            
-
-            if($("#start_or_end").val() == "starting"){
-                plotForwards = true;
-            } else if($("#start_or_end").val() == "finishing"){
-                plotForwards = false;
+        for (i = 0; i < episodes.length; i++) { 
+            //Using a start date and plotting forwards
+            //or using and end date and going backwards
+            if(plotForwards == true){
+                var episode = episodes[i];
             } else {
-                alert("don't know whether to go forwards or backwards bro")
+                //start at the last episode
+                var episode = episodes[episode_count - i - 1];
             }
 
-            
+            //If episode within watch range
+            if($("#range_name").val() == "only"){
+                var start_season = $("#start_season").val();
+                var end_season = $("#end_season").val();
+                
+                if(episode.season < start_season || episode.season > end_season){
+                    continue; //out of season range
+                }
+            } 
 
-            for (i = 0; i < episodes.length; i++) { 
+            var episode_event = {
+                title : formatTitle(episode.season, episode.number) + ": " + episode.name,
+                start : watch_date.toISOString(),
+                duration: episode.runtime,
+                backgroundColor: colours[episode.season],
+                url: episode.url
+            }
 
-                //Using a start date and plotting forwards
-                //or using and end date and going backwards
+            //Per Day
+            if($("#frequency_name").val() == "day"){
+                var frequency = parseInt($("#frequency_num").val());
                 if(plotForwards == true){
-                    var episode = episodes[i];
+                    dateDirection = 1;
                 } else {
-                    //start at the last episode
-                    var episode = episodes[episode_count - i - 1];
+                    dateDirection = -1;
                 }
-
-                //If episode within watch range
-                if($("#range_name").val() == "only"){
-                    var start_season = $("#start_season").val();
-                    var end_season = $("#end_season").val();
-                    
-                    if(episode.season < start_season || episode.season > end_season){
-                        continue; //out of season range
-                    }
+                if(frequency == day_count){
+                    day_count = 0;
+                    watch_date.setDate(watch_date.getDate() + dateDirection); //increment day
+                    episode_event.start = watch_date.toISOString();
                 }
-            
+                episode_events.push(episode_event);
+                total_runtime += episode_event.duration;
+            }
 
-                var episode_event = {
-                    title : formatTitle(episode.season, episode.number) + ": " + episode.name,
-                    start : watch_date.toISOString(),
-                    duration: episode.runtime,
-                    backgroundColor: colours[episode.season],
-                    url: episode.url
-                }
-
-                // console.log(episode_event.title + ": " + episode_event.duration);
-
-                //Per Day
-                if($("#frequency_name").val() == "day"){
-                    var frequency = parseInt($("#frequency_num").val());
-                    if(plotForwards == true){
-                        dateDirection = 1;
-                    } else {
-                        dateDirection = -1;
-                    }
-                    if(frequency == day_count){
-                        day_count = 0;
-                        watch_date.setDate(watch_date.getDate() + dateDirection); //increment day
-                        episode_event.start = watch_date.toISOString();
-                    }
-                    episode_events.push(episode_event);
-                    total_runtime += episode_event.duration;
-                }
-
-                //Per Week
-                if($("#frequency_name").val() == "week"){            
-                    if(plotForwards == true){
-                        dateDirection = 1;
-                    } else {
-                        dateDirection = -1;
-                    }
-                    
-                    var frequency = parseInt($("#frequency_num").val());
-                    var week = getEpisodeDistribution(frequency);
-                    var day = watch_date.getDay();
-                    
-                    //episode today
-                    if(day_count >= week[day]){
-                        day_count = 0;
-                        watch_date.setDate(watch_date.getDate() + dateDirection); //increment day
-                        episode_event.start = watch_date.toISOString();
-                    }
-                    if(week[day] != 0){
-                        episode_events.push(episode_event);
-                        total_runtime += episode_event.duration;
-                    } 
-                }
-
-                //Per Weekday
-                if($("#frequency_name").val() == "weekday"){
-                    var frequency = parseInt($("#frequency_num").val());
-                    if(frequency == day_count){
-                        //new day
-                        day_count = 0;
-                        if(plotForwards == true){
-                            if(watch_date.getDay() == 5){
-                                watch_date.setDate(watch_date.getDate() + 3); //increment weekend
-                            } else {
-                                watch_date.setDate(watch_date.getDate() + 1); //increment day
-                            }
-                        } else {
-                            if(watch_date.getDay() == 1){
-                                watch_date.setDate(watch_date.getDate() - 3); //increment weekend
-                            } else {
-                                watch_date.setDate(watch_date.getDate() - 1); //increment day
-                            }
-                        }
-
-                        episode_event.start = watch_date.toISOString();
-                    }
-                    
-                    episode_events.push(episode_event);
-                    total_runtime += episode_event.duration;
+            //Per Week
+            if($("#frequency_name").val() == "week"){            
+                if(plotForwards == true){
+                    dateDirection = 1;
+                } else {
+                    dateDirection = -1;
                 }
                 
-                //Weekend Day
-                if($("#frequency_name").val() == "weekendday"){
-                    var frequency = parseInt($("#frequency_num").val());
-                    if(frequency == day_count || i == 0){
-                        //new day
-                        day_count = 0;
-
-                        if(plotForwards == true){
-                            if(watch_date.getDay() == 6){
-                                watch_date.setDate(watch_date.getDate() + 1); //increment day
-                            } else {
-                                var increment = 6 - watch_date.getDay();
-                                watch_date.setDate(watch_date.getDate() + increment); //increment weekend
-                            }
-                        } else {
-                            if(watch_date.getDay() == 0){
-                                watch_date.setDate(watch_date.getDate() - 1); //increment day
-                            } else {
-                                var increment = 0 - watch_date.getDay();
-                                watch_date.setDate(watch_date.getDate() + increment); //increment weekend
-                            }
-                        }
-
-                        episode_event.start = watch_date.toISOString();
-                    }
+                var frequency = parseInt($("#frequency_num").val());
+                var week = getEpisodeDistribution(frequency);
+                var day = watch_date.getDay();
+                
+                //episode today
+                if(day_count >= week[day]){
+                    day_count = 0;
+                    watch_date.setDate(watch_date.getDate() + dateDirection); //increment day
+                    episode_event.start = watch_date.toISOString();
+                }
+                if(week[day] != 0){
                     episode_events.push(episode_event);
                     total_runtime += episode_event.duration;
-                }
-
-                day_count++;
+                } 
             }
 
-            
-            var initial = episode_events[episode_events.length-1].start;
-
-
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                events: episode_events,
-                themeSystem: 'default',
-                displayEventTime: false,
-                initialDate: initial,
-                eventClick: function(info) {
-                    info.jsEvent.preventDefault(); // don't let the browser navigate    
-                    if (info.event.url) {
-                        window.open(info.event.url);
+            //Per Weekday
+            if($("#frequency_name").val() == "weekday"){
+                var frequency = parseInt($("#frequency_num").val());
+                if(frequency == day_count){
+                    //new day
+                    day_count = 0;
+                    if(plotForwards == true){
+                        if(watch_date.getDay() == 5){
+                            watch_date.setDate(watch_date.getDate() + 3); //increment weekend
+                        } else {
+                            watch_date.setDate(watch_date.getDate() + 1); //increment day
+                        }
+                    } else {
+                        if(watch_date.getDay() == 1){
+                            watch_date.setDate(watch_date.getDate() - 3); //increment weekend
+                        } else {
+                            watch_date.setDate(watch_date.getDate() - 1); //increment day
+                        }
                     }
+
+                    episode_event.start = watch_date.toISOString();
                 }
-            });
+                
+                episode_events.push(episode_event);
+                total_runtime += episode_event.duration;
+            }
+            
+            //Weekend Day
+            if($("#frequency_name").val() == "weekendday"){
+                var frequency = parseInt($("#frequency_num").val());
+                if(frequency == day_count || i == 0){
+                    //new day
+                    day_count = 0;
 
-            function formatDate(date) {
-                var d = new Date(date),
-                    month = '' + (d.getMonth() + 1),
-                    day = '' + d.getDate(),
-                    year = d.getFullYear();
+                    if(plotForwards == true){
+                        if(watch_date.getDay() == 6){
+                            watch_date.setDate(watch_date.getDate() + 1); //increment day
+                        } else {
+                            var increment = 6 - watch_date.getDay();
+                            watch_date.setDate(watch_date.getDate() + increment); //increment weekend
+                        }
+                    } else {
+                        if(watch_date.getDay() == 0){
+                            watch_date.setDate(watch_date.getDate() - 1); //increment day
+                        } else {
+                            var increment = 0 - watch_date.getDay();
+                            watch_date.setDate(watch_date.getDate() + increment); //increment weekend
+                        }
+                    }
 
-                if (month.length < 2) 
-                    month = '0' + month;
-                if (day.length < 2) 
-                    day = '0' + day;
-
-                return [day, month, year].join('/');
+                    episode_event.start = watch_date.toISOString();
+                }
+                episode_events.push(episode_event);
+                total_runtime += episode_event.duration;
             }
 
-            calendar.render();
+            day_count++;
+        }
 
-            var info = "Number of episodes: " + episode_count + "<br />";
-            info += "Start date: " + formatDate(episode_events[0].start) + "<br />";
-            info += "End date: " + formatDate(episode_events[episode_events.length-1].start) + "<br />";
-            info += "Number of seasons: " + season_count + "<br />";
-            info += "Total watch time: " + total_runtime + " mins (" + round(total_runtime/60) + " hours)<br />";
-            info += "Average episode length: " + Math.floor(total_runtime/episode_count) + " mins<br />";
+        
+        var initial = episode_events[episode_events.length-1].start;
 
-            $("#info").html(info);
+
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events: episode_events,
+            themeSystem: 'default',
+            displayEventTime: false,
+            initialDate: initial,
+            eventClick: function(info) {
+                info.jsEvent.preventDefault(); // don't let the browser navigate    
+                if (info.event.url) {
+                    window.open(info.event.url);
+                }
+            }
+        });
+
+        function formatDate(date) {
+            var d = new Date(date),
+                month = '' + (d.getMonth() + 1),
+                day = '' + d.getDate(),
+                year = d.getFullYear();
+
+            if (month.length < 2) 
+                month = '0' + month;
+            if (day.length < 2) 
+                day = '0' + day;
+
+            return [day, month, year].join('/');
+        }
+
+        calendar.render();
+
+        var info = "Number of episodes: " + episode_count + "<br />";
+        info += "Start date: " + formatDate(episode_events[0].start) + "<br />";
+        info += "End date: " + formatDate(episode_events[episode_events.length-1].start) + "<br />";
+        info += "Number of seasons: " + season_count + "<br />";
+        info += "Total watch time: " + total_runtime + " mins (" + round(total_runtime/60) + " hours)<br />";
+        info += "Average episode length: " + Math.floor(total_runtime/episode_count) + " mins<br />";
+
+        $("#info").html(info);
     }
 
     function round(number){
         return Math.floor(number * 100)/100;
     }
-
-    
 
     //Distrbute episodes accross week
     function getEpisodeDistribution(totalEpisodes){
@@ -318,7 +295,7 @@ $(document).ready(function() {
         return week;
     }
 
-    $( "#key_date" ).datepicker().datepicker("setDate", new Date()).datepicker('option','dateFormat','dd/mm/yy');;
+    $("#key_date").datepicker().datepicker("setDate", new Date()).datepicker('option','dateFormat','dd/mm/yy');;
 
     $("#create_schedule").click(function(e){
         e.preventDefault();
@@ -333,8 +310,6 @@ $(document).ready(function() {
             scrollTop: $scrollTo.offset().top - $container.offset().top + $container.scrollTop() - 20
         });
     });
-
-    
 
     //initial population 
     $.getJSON('bcs.json', function(data) { //Better call saul
@@ -352,8 +327,6 @@ $(document).ready(function() {
             $("#show_group").removeClass("searched");
         }
     });
-
-
 });
 
 Number.prototype.pad = function(size) {
