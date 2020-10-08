@@ -294,9 +294,6 @@ $(document).ready(function() {
             info += "Average episode length: " + Math.floor(total_runtime/episode_count) + " mins<br />";
 
             $("#info").html(info);
-            
-
-
     }
 
     function round(number){
@@ -326,7 +323,18 @@ $(document).ready(function() {
     $("#create_schedule").click(function(e){
         e.preventDefault();
         createEvents();
+        $("#info").show();
+
+        var $container = $('body'),
+        $scrollTo = $('#calendar');
+
+        // Or you can animate the scrolling:
+        $container.animate({
+            scrollTop: $scrollTo.offset().top - $container.offset().top + $container.scrollTop() - 20
+        });
     });
+
+    
 
     //initial population 
     $.getJSON('bcs.json', function(data) { //Better call saul

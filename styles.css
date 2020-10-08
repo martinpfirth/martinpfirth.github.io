@@ -7,6 +7,7 @@ body{
     text-align: center;
     padding: 10px 0;
     border-bottom: 1px solid #ccc;
+    margin-bottom: 30px;
 }
 
 #header h1{
@@ -24,8 +25,10 @@ body{
     max-width: 100%;
     min-width: 80%;
     margin: auto;
-    padding: 30px;
     vertical-align: top;
+    text-align: center;
+    padding: 0 20px;
+    box-sizing: border-box;
 }
 
 
@@ -129,19 +132,31 @@ input[type="number"]{
 }
 
 #setup{
-    width: 450px;
+    width: 440px;
     display: inline-block;
     vertical-align: top;
     line-height: 48px;
     font-size: 18px;
+    margin: 0 auto 50px auto;
+    text-align: left;
 }
 
 
+
+
 #calendar{
-    width: calc(100% - 500px);
+    width: calc(100% - 530px);
     min-width: 700px;
     display: inline-block;
     vertical-align: top;
+    margin-right: 30px;
+}
+
+@media only screen and (max-width: 1160px) {
+    #calendar{
+        width: 100%;
+        margin-right: 0;
+    }
 }
 
 select {
@@ -183,4 +198,6 @@ select::-ms-expand {
     padding: 15px;
     margin-right: 80px;
     border: 1px solid rgb(173, 237, 173);
+    text-align: left;
+    display: none;
 }
