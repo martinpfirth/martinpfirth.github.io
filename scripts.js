@@ -31,7 +31,7 @@ $(document).ready(function() {
         console.log('showing search');
         var encoded_name = encodeURIComponent(search_text).replace(/%20/g, "+");;
 
-        $.getJSON('http://api.tvmaze.com/search/shows?q=' + encoded_name, function(data) {
+        $.getJSON('https://api.tvmaze.com/search/shows?q=' + encoded_name, function(data) {
             var resultCount = Math.min(data.length, 5);
             var results = "";
             for (i = 0; i < resultCount; i++) { 
@@ -61,7 +61,7 @@ $(document).ready(function() {
         //UI change
         $("#show_group").removeClass("searched searching");
         $(".show").remove();
-        $.getJSON('http://api.tvmaze.com/shows/' + show_id + '/episodes', function(data) {
+        $.getJSON('https://api.tvmaze.com/shows/' + show_id + '/episodes', function(data) {
             var episode_count = data.length;
             var season_count = data[episode_count-1].season;
 
