@@ -27,6 +27,9 @@ $(document).ready(function() {
         }
     });
 
+    var episodes = [];
+    var show_name = "Better Call Saul";
+
     function showSearch(search_text){
         console.log('showing search');
         var encoded_name = encodeURIComponent(search_text).replace(/%20/g, "+");;
@@ -43,7 +46,7 @@ $(document).ready(function() {
 
             $("#show_suggestions li").click(function(){
                 var show_id = $(this).data("id");
-                var show_name = $(this).html();
+                show_name = $(this).html();
                 $("#show_group").removeClass("searching searched");
                 chooseShow(show_id, show_name);
             });
@@ -53,7 +56,7 @@ $(document).ready(function() {
         });
     }
 
-    var episodes = [];
+    
 
     function chooseShow(show_id, show_name){
         console.log("chosen show " + show_id);
@@ -145,6 +148,7 @@ $(document).ready(function() {
                 }
                 episode_events.push(episode_event);
                 total_runtime += episode_event.duration;
+                console.log(episode_event.duration);
             }
 
             //Per Week
@@ -265,7 +269,12 @@ $(document).ready(function() {
 
         calendar.render();
 
-        var info = "Number of episodes: " + episode_count + "<br />";
+        var info = "Show: " + show_name + "<br />";
+        info += "Number of episodes: " + episode_count + "<br />";
+        var start = new Date(episode_events[0].start);
+        var end = new Date(episode_events[episode_events.length-1].start);
+        var duration = (end - start)  / (1000*60*60*24) + 1;
+        info += "Days required: " + duration + "<br />";
         info += "Start date: " + formatDate(episode_events[0].start) + "<br />";
         info += "End date: " + formatDate(episode_events[episode_events.length-1].start) + "<br />";
         info += "Number of seasons: " + season_count + "<br />";
