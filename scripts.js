@@ -162,17 +162,27 @@ $(document).ready(function() {
                 var frequency = parseInt($("#frequency_num").val());
                 var week = getEpisodeDistribution(frequency);
                 var day = watch_date.getDay();
+
+                var qty_per_day = week[day];
                 
                 //episode today
-                if(day_count >= week[day]){
+                if(day_count >= qty_per_day){
                     day_count = 0;
                     watch_date.setDate(watch_date.getDate() + dateDirection); //increment day
-                    episode_event.start = watch_date.toISOString();
                 }
-                if(week[day] != 0){
-                    episode_events.push(episode_event);
-                    total_runtime += episode_event.duration;
-                } 
+
+                //nothing for today
+                while (qty_per_day == 0) {
+                    //increment day
+                    watch_date.setDate(watch_date.getDate() + dateDirection); 
+                    day = watch_date.getDay();
+                    qty_per_day = week[day];
+                }
+
+                episode_event.start = watch_date.toISOString();
+
+                episode_events.push(episode_event);
+                total_runtime += episode_event.duration;
             }
 
             //Per Weekday
@@ -293,7 +303,7 @@ $(document).ready(function() {
         var week = [0,0,0,0,0,0,0];
         var day = 0;
 
-        for (e = 0; e < totalEpisodes; e++) {
+        for (e = 1; e < totalEpisodes; e++) {
             week[day]++; //add an episode to day
             if(day < 6){
                 day++; //next day
