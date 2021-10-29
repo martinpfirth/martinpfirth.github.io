@@ -301,7 +301,7 @@ $(document).ready(function() {
     //Distrbute episodes accross week
     function getEpisodeDistribution(totalEpisodes){
         var week = [0,0,0,0,0,0,0];
-        var day = 0;
+        var day = 1;
 
         for (e = 1; e < totalEpisodes; e++) {
             week[day]++; //add an episode to day
